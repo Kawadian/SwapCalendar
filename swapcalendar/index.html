@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>スワップポイントカレンダー</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div>
+        <h1>スワップポイントカレンダー</h1>
+        <p id="header-description">休日情報をもとにスワップ付与日数を算出します。</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="pair-panel">
+        <div class="field">
+          <label for="currency1">通貨1</label>
+          <select id="currency1"></select>
+        </div>
+
+        <div class="slash">/</div>
+
+        <div class="field">
+          <label for="currency2">通貨2</label>
+          <select id="currency2"></select>
+        </div>
+      </section>
+
+      <div class="tabs">
+        <button id="calendar-tab-button" class="active" type="button">
+          月表示のスワップカレンダー
+        </button>
+        <button id="simulator-tab-button" type="button">
+          スワップ累計損益シミュレーター
+        </button>
+      </div>
+
+      <section id="calendar-tab" class="tab-body">
+        <div class="month-toolbar">
+          <button id="prev-month-button" type="button">前月</button>
+          <div id="month-title" class="month-title"></div>
+          <button id="next-month-button" type="button">翌月</button>
+        </div>
+
+        <div class="month-input-row">
+          <label>
+            年月指定
+            <input id="month-input" type="month" />
+          </label>
+        </div>
+
+        <div id="calendar" class="calendar"></div>
+
+        <p class="note">
+          ※ 一般的なT+2ロールオーバーを前提に、通貨ペアのいずれかの通貨が休日の場合は非営業日として扱います。
+        </p>
+      </section>
+
+      <section id="simulator-tab" class="tab-body hidden">
+        <div class="sim-grid">
+          <label class="field">
+            買いスワップ 1日分・1ロットあたり
+            <input id="buy-swap-input" type="number" inputmode="decimal" value="0" />
+          </label>
+
+          <label class="field">
+            売りスワップ 1日分・1ロットあたり
+            <input id="sell-swap-input" type="number" inputmode="decimal" value="0" />
+          </label>
+
+          <label class="field">
+            ロット数
+            <input id="lots-input" type="number" inputmode="decimal" min="0" step="0.01" value="1" />
+          </label>
+
+          <label class="field">
+            開始日
+            <div class="date-with-button">
+              <input id="start-date-input" type="date" />
+              <button id="today-button" type="button">今日</button>
+            </div>
+          </label>
+
+          <label class="field">
+            終了日
+            <input id="end-date-input" type="date" />
+          </label>
+        </div>
+
+        <div class="result-panel">
+          <h2>シミュレーション結果</h2>
+          <div id="simulation-result"></div>
+
+          <p class="note">
+            ※ 終了日前日のロールオーバーまで保有する前提で計算します。
+            例：終了日が5月10日の場合、5月9日分までを対象にします。
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
