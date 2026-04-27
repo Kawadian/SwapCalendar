@@ -276,10 +276,17 @@ button {
 }
 
 .holiday-item {
-  display: -webkit-box;
+  display: block;
   overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+@supports (-webkit-line-clamp: 2) {
+  .holiday-item {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 }
 
 .note {
@@ -435,7 +442,15 @@ button {
   }
 
   .holiday-item {
-    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  @supports (-webkit-line-clamp: 1) {
+    .holiday-item {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
   }
 
   .sim-grid,

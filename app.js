@@ -54,6 +54,11 @@ const COUNTRY_BY_CURRENCY = {
 
 const holidayInstances = new Map();
 const holidayMemo = new Map();
+const WEEKDAY = {
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4
+};
 
 let state = {
   ccy1: 'USD',
@@ -523,19 +528,23 @@ function swapDaysForDate(ccy1, ccy2, ymd) {
   const holidayToday = getPairHolidayDetails(ccy1, ccy2, ymd).length > 0;
   const holidayYesterday = getPairHolidayDetails(ccy1, ccy2, prevYmd).length > 0;
 
-  if (weekday === 2 && current >= 3 && next === 0) {
+  // 祝日配置の影響で水曜分の複数日付与が火曜に寄ってしまう場合は、水曜に寄せ直す。
+  if (weekday === WEEKDAY.TUESDAY && current >= 3 && next === 0) {
     return 0;
   }
 
-  if (weekday === 3 && current === 0 && prev >= 3) {
+  // 火曜から寄せ直した水曜分の複数日付与を、水曜セルに表示する。
+  if (weekday === WEEKDAY.WEDNESDAY && current === 0 && prev >= 3) {
     return prev;
   }
 
-  if (weekday === 3 && holidayToday && current === 1 && next === 0) {
+  // 祝日の水曜に1日分だけ出るケースは、翌営業日側に表示を寄せる。
+  if (weekday === WEEKDAY.WEDNESDAY && holidayToday && current === 1 && next === 0) {
     return 0;
   }
 
-  if (weekday === 4 && holidayYesterday && prev === 1 && current === 0) {
+  // 前日の祝日水曜から寄せた1日分を、木曜セルに表示する。
+  if (weekday === WEEKDAY.THURSDAY && holidayYesterday && prev === 1 && current === 0) {
     return 1;
   }
 
