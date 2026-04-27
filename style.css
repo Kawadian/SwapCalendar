@@ -440,9 +440,6 @@ button {
     font-size: 10px;
   }
 
-  .holiday-item {
-  }
-
   @supports (-webkit-line-clamp: 1) {
     .holiday-item {
       display: -webkit-box;
