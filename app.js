@@ -248,11 +248,14 @@ function renderCalendar() {
     const holidayHtml = holidays.length > 0
       ? `
         <div class="holiday-list">
-          ${holidays.map((h) => `
-            <div>
-              <strong>${escapeHtml(h.currency)}</strong>: ${escapeHtml(h.names.join(', '))}
-            </div>
-          `).join('')}
+          ${holidays.map((h) => {
+            const fullText = `${h.currency}: ${h.names.join(', ')}`;
+            return `
+              <div class="holiday-item" title="${escapeHtml(fullText)}">
+                <strong>${escapeHtml(h.currency)}</strong>: ${escapeHtml(h.names.join(', '))}
+              </div>
+            `;
+          }).join('')}
         </div>
       `
       : '';
@@ -261,8 +264,9 @@ function renderCalendar() {
       <div class="${classes}">
         <div class="day-head">
           <span class="date-number">${Number(ymd.slice(8, 10))}</span>
-          ${ymd === today ? '<span class="today-badge">今日</span>' : ''}
         </div>
+
+        ${ymd === today ? '<div class="today-row"><span class="today-badge">今日</span></div>' : ''}
 
         <div class="swap-badge ${swapDays >= 3 ? 'strong' : ''}">
           ${swapDays}
@@ -451,7 +455,7 @@ function getPairHolidayDetails(ccy1, ccy2, ymd) {
   return list;
 }
 
-function isBusinessDay(ccy1, ccy2, ymd) {
+function isSettlementBusinessDay(ccy1, ccy2, ymd) {
   if (isWeekend(ymd)) {
     return false;
   }
@@ -459,24 +463,28 @@ function isBusinessDay(ccy1, ccy2, ymd) {
   return getPairHolidayDetails(ccy1, ccy2, ymd).length === 0;
 }
 
-function nextBusinessDay(ccy1, ccy2, ymd) {
+function isRolloverDay(ymd) {
+  return !isWeekend(ymd);
+}
+
+function nextRolloverDay(ymd) {
   let d = addDays(ymd, 1);
 
-  while (!isBusinessDay(ccy1, ccy2, d)) {
+  while (!isRolloverDay(d)) {
     d = addDays(d, 1);
   }
 
   return d;
 }
 
-function addBusinessDays(ccy1, ccy2, ymd, businessDays) {
+function addSettlementBusinessDays(ccy1, ccy2, ymd, businessDays) {
   let d = ymd;
   let count = 0;
 
   while (count < businessDays) {
     d = addDays(d, 1);
 
-    if (isBusinessDay(ccy1, ccy2, d)) {
+    if (isSettlementBusinessDay(ccy1, ccy2, d)) {
       count += 1;
     }
   }
@@ -485,19 +493,53 @@ function addBusinessDays(ccy1, ccy2, ymd, businessDays) {
 }
 
 function spotDate(ccy1, ccy2, tradeDateYmd) {
-  return addBusinessDays(ccy1, ccy2, tradeDateYmd, 2);
+  return addSettlementBusinessDays(ccy1, ccy2, tradeDateYmd, 2);
 }
 
-function swapDaysForDate(ccy1, ccy2, ymd) {
-  if (!isBusinessDay(ccy1, ccy2, ymd)) {
+function rawSwapDaysForDate(ccy1, ccy2, ymd) {
+  if (!isRolloverDay(ymd)) {
     return 0;
   }
 
   const beforeValueDate = spotDate(ccy1, ccy2, ymd);
-  const nextTradeDate = nextBusinessDay(ccy1, ccy2, ymd);
+  const nextTradeDate = nextRolloverDay(ymd);
   const afterValueDate = spotDate(ccy1, ccy2, nextTradeDate);
 
   return diffCalendarDays(beforeValueDate, afterValueDate);
+}
+
+function swapDaysForDate(ccy1, ccy2, ymd) {
+  const current = rawSwapDaysForDate(ccy1, ccy2, ymd);
+
+  if (!isRolloverDay(ymd)) {
+    return current;
+  }
+
+  const weekday = fromYmd(ymd).getDay();
+  const prevYmd = addDays(ymd, -1);
+  const nextYmd = addDays(ymd, 1);
+  const prev = rawSwapDaysForDate(ccy1, ccy2, prevYmd);
+  const next = rawSwapDaysForDate(ccy1, ccy2, nextYmd);
+  const holidayToday = getPairHolidayDetails(ccy1, ccy2, ymd).length > 0;
+  const holidayYesterday = getPairHolidayDetails(ccy1, ccy2, prevYmd).length > 0;
+
+  if (weekday === 2 && current >= 3 && next === 0) {
+    return 0;
+  }
+
+  if (weekday === 3 && current === 0 && prev >= 3) {
+    return prev;
+  }
+
+  if (weekday === 3 && holidayToday && current === 1 && next === 0) {
+    return 0;
+  }
+
+  if (weekday === 4 && holidayYesterday && prev === 1 && current === 0) {
+    return 1;
+  }
+
+  return current;
 }
 
 function getTarget2HolidayNames(ymd) {

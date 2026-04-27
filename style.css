@@ -226,12 +226,16 @@ button {
 
 .day-head {
   display: flex;
-  justify-content: space-between;
   gap: 6px;
+  align-items: flex-start;
 }
 
 .date-number {
   font-weight: 900;
+}
+
+.today-row {
+  min-height: 20px;
 }
 
 .today-badge {
@@ -262,10 +266,20 @@ button {
 }
 
 .holiday-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 12px;
   line-height: 1.4;
   color: #b91c1c;
   overflow-wrap: anywhere;
+}
+
+.holiday-item {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .note {
@@ -407,8 +421,21 @@ button {
     padding: 5px;
   }
 
+  .day-head {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .today-row {
+    min-height: 18px;
+  }
+
   .holiday-list {
     font-size: 10px;
+  }
+
+  .holiday-item {
+    -webkit-line-clamp: 1;
   }
 
   .sim-grid,
