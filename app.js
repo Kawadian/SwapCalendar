@@ -54,6 +54,7 @@ const COUNTRY_BY_CURRENCY = {
 
 const holidayInstances = new Map();
 const holidayMemo = new Map();
+// 3日以上は、水曜の週末持ち越しや連休またぎで発生する複数日付与として扱う。
 const MULTI_DAY_SWAP_THRESHOLD = 3;
 const WEEKDAY = {
   TUESDAY: 2,
@@ -528,9 +529,8 @@ function swapDaysForDate(ccy1, ccy2, ymd) {
   const prev = rawSwapDaysForDate(ccy1, ccy2, prevYmd);
   const next = rawSwapDaysForDate(ccy1, ccy2, nextYmd);
   const holidayDetailsToday = getPairHolidayDetails(ccy1, ccy2, ymd);
-  const holidayDetailsYesterday = getPairHolidayDetails(ccy1, ccy2, prevYmd);
   const holidayToday = holidayDetailsToday.length > 0;
-  const holidayYesterday = holidayDetailsYesterday.length > 0;
+  const holidayYesterday = getPairHolidayDetails(ccy1, ccy2, prevYmd).length > 0;
 
   // Shift a Wednesday multi-day accrual back from Tuesday when holidays pull it forward.
   // 祝日配置の影響で水曜分の複数日付与が火曜に寄ってしまう場合は、水曜に寄せ直す。
