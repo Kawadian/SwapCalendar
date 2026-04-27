@@ -278,7 +278,6 @@ button {
 .holiday-item {
   display: block;
   overflow: hidden;
-  line-clamp: 2;
 }
 
 @supports (-webkit-line-clamp: 2) {
@@ -442,7 +441,6 @@ button {
   }
 
   .holiday-item {
-    line-clamp: 1;
   }
 
   @supports (-webkit-line-clamp: 1) {
