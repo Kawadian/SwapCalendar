@@ -532,21 +532,25 @@ function swapDaysForDate(ccy1, ccy2, ymd) {
   const holidayToday = holidayDetailsToday.length > 0;
   const holidayYesterday = holidayDetailsYesterday.length > 0;
 
+  // Shift a Wednesday multi-day accrual back from Tuesday when holidays pull it forward.
   // 祝日配置の影響で水曜分の複数日付与が火曜に寄ってしまう場合は、水曜に寄せ直す。
   if (weekday === WEEKDAY.TUESDAY && current >= MULTI_DAY_SWAP_THRESHOLD && next === 0) {
     return 0;
   }
 
+  // Show the shifted Wednesday multi-day accrual on the Wednesday cell.
   // 火曜から寄せ直した水曜分の複数日付与を、水曜セルに表示する。
   if (weekday === WEEKDAY.WEDNESDAY && current === 0 && prev >= MULTI_DAY_SWAP_THRESHOLD) {
     return prev;
   }
 
+  // Move a one-day holiday-Wednesday accrual to the following business day display.
   // 祝日の水曜に1日分だけ出るケースは、翌営業日側に表示を寄せる。
   if (weekday === WEEKDAY.WEDNESDAY && holidayToday && current === 1 && next === 0) {
     return 0;
   }
 
+  // Show the one-day accrual shifted from a holiday Wednesday on Thursday.
   // 前日の祝日水曜から寄せた1日分を、木曜セルに表示する。
   if (weekday === WEEKDAY.THURSDAY && holidayYesterday && prev === 1 && current === 0) {
     return 1;
