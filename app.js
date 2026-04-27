@@ -254,10 +254,11 @@ function renderCalendar() {
       ? `
         <div class="holiday-list">
           ${holidays.map((h) => {
-            const fullText = `${h.currency}: ${h.names.join(', ')}`;
+            const joinedNames = h.names.join(', ');
+            const fullText = `${h.currency}: ${joinedNames}`;
             return `
               <div class="holiday-item" title="${escapeHtml(fullText)}">
-                <strong>${escapeHtml(h.currency)}</strong>: ${escapeHtml(h.names.join(', '))}
+                <strong>${escapeHtml(h.currency)}</strong>: ${escapeHtml(joinedNames)}
               </div>
             `;
           }).join('')}

@@ -276,6 +276,7 @@ button {
 }
 
 .holiday-item {
+  --holiday-line-clamp: 2;
   display: block;
   overflow: hidden;
 }
@@ -284,7 +285,7 @@ button {
   .holiday-item {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: var(--holiday-line-clamp);
   }
 }
 
@@ -440,12 +441,8 @@ button {
     font-size: 10px;
   }
 
-  @supports (-webkit-line-clamp: 1) {
-    .holiday-item {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
-    }
+  .holiday-item {
+    --holiday-line-clamp: 1;
   }
 
   .sim-grid,
