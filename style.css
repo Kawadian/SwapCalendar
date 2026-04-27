@@ -1,4 +1,5 @@
 :root {
+  --holiday-line-clamp-default: 2;
   color-scheme: light;
   font-family:
     system-ui,
@@ -276,7 +277,7 @@ button {
 }
 
 .holiday-item {
-  --holiday-line-clamp: 2;
+  --holiday-line-clamp: var(--holiday-line-clamp-default);
   display: block;
   overflow: hidden;
 }
