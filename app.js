@@ -100,10 +100,10 @@ function bindElements() {
 }
 
 function initializeState() {
-  const [ccy1, ccy2] = parsePairFromPath();
+  const { ccy1, ccy2, month } = parseParamsFromUrl();
   state.ccy1 = ccy1;
   state.ccy2 = ccy2;
-  state.month = parseMonthFromUrl();
+  state.month = month;
 }
 
 function initializeCurrencySelects() {
@@ -185,10 +185,10 @@ function bindEvents() {
   });
 
   window.addEventListener('popstate', () => {
-    const [ccy1, ccy2] = parsePairFromPath();
+    const { ccy1, ccy2, month } = parseParamsFromUrl();
     state.ccy1 = ccy1;
     state.ccy2 = ccy2;
-    state.month = parseMonthFromUrl();
+    state.month = month;
 
     els.currency1.value = state.ccy1;
     els.currency2.value = state.ccy2;
@@ -265,7 +265,7 @@ function renderCalendar() {
         </div>
 
         <div class="swap-badge ${swapDays >= 3 ? 'strong' : ''}">
-          付与 ${swapDays}日
+          ${swapDays}
         </div>
 
         ${holidayHtml}
@@ -340,41 +340,33 @@ function renderSimulator() {
   `;
 }
 
-function parsePairFromPath() {
+function parseParamsFromUrl() {
+  const params = new URLSearchParams(window.location.search);
   const validCodes = CURRENCIES.map((c) => c.code);
 
-  const parts = window.location.pathname
-    .split('/')
-    .map((p) => p.trim().toUpperCase())
-    .filter(Boolean);
+  let ccy1 = (params.get('ccy1') || '').toUpperCase();
+  let ccy2 = (params.get('ccy2') || '').toUpperCase();
+  let month = params.get('month');
 
-  if (
-    parts.length >= 2 &&
-    validCodes.includes(parts[0]) &&
-    validCodes.includes(parts[1])
-  ) {
-    return [parts[0], parts[1]];
+  if (!validCodes.includes(ccy1) || !validCodes.includes(ccy2)) {
+    ccy1 = 'USD';
+    ccy2 = 'JPY';
   }
 
-  return ['USD', 'JPY'];
-}
-
-function parseMonthFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const month = params.get('month');
-
-  if (/^\d{4}-\d{2}$/.test(month || '')) {
-    return month;
+  if (!/^\d{4}-\d{2}$/.test(month || '')) {
+    month = todayJstYmd().slice(0, 7);
   }
 
-  return todayJstYmd().slice(0, 7);
+  return { ccy1, ccy2, month };
 }
 
 function updateUrl() {
   const params = new URLSearchParams(window.location.search);
+  params.set('ccy1', state.ccy1);
+  params.set('ccy2', state.ccy2);
   params.set('month', state.month);
 
-  const newUrl = `/${state.ccy1}/${state.ccy2}?${params.toString()}`;
+  const newUrl = `${window.location.pathname}?${params.toString()}`;
   window.history.replaceState(null, '', newUrl);
 }
 

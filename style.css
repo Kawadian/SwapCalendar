@@ -244,12 +244,15 @@ button {
 }
 
 .swap-badge {
-  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   background: #e2e8f0;
   color: #334155;
-  padding: 5px 8px;
-  border-radius: 999px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 900;
 }
 
@@ -402,11 +405,6 @@ button {
   .day-cell {
     min-height: 96px;
     padding: 5px;
-  }
-
-  .swap-badge {
-    font-size: 11px;
-    padding: 4px 6px;
   }
 
   .holiday-list {
